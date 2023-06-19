@@ -1,0 +1,84 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  font-size: 1rem;
+  color: #e2e2e2;
+  background-color: rgb(64, 64, 65);
+  overflow-x: hidden;
+}
+
+article {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  max-width: 100vw;
+  font-size: 20px;
+}
+
+form {
+  margin: 40px;
+  padding: 0.6rem;
+  height: max(fit-content, 30%);
+  width: max(fit-content, 30%);
+  border: 2px solid red;
+}
+
+label {
+     font-size: 1.47rem;
+     transform: translateY(25%);
+}
+
+select {
+  padding: 2px 0;
+  width: 140px;
+  max-width: fit-content;
+}
+
+input[type="number"] {
+  padding: 4px 0;
+}
+
+span {
+  margin-bottom: 10px;
+}
+
+#tableBox {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: absolute;
+  top: 350px;
+  width: 100vw;
+}
+
+#fullTable, #convertedTable {
+  margin-left: 3%;
+}
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------------
+              tables
+------------------------------------------------------------------------------------------------------------------------ */
+
+
+
+th, td {
+  padding: 7px;
+  border: 1px solid #000000;
+}
+
+th {
+  margin-left: 10px;
+}
+
+tr {
+  font-size: 18px;
+}
