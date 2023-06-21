@@ -8,6 +8,10 @@ class NBP_API
 {
     private $conn;
 
+    // contain last converted currencys names
+    public $last_sourceCurrency;
+    public $last_targetCurrency;
+
     public function __construct()
     {
         $this->conn = conn_open();
@@ -78,11 +82,16 @@ class NBP_API
 
     public function generateConvertedTable()
     {
+        // Pobranie wartości z metody POST
+            $last_sourceCurrency = $_POST["sourceCurrency"];
+            $last_targetCurrency = $_POST["targetCurrency"];
+    
         $query = "SELECT source_currency, target_currency, converted_amount
-        FROM conversion_history
-        WHERE source_currency = target_currency";
+                  FROM conversion_history
+                  WHERE source_currency = '$last_sourceCurrency'
+                  AND target_currency = '$last_targetCurrency'";
         $result = $this->conn->query($query);
-
+    
         if ($result->num_rows > 0) {
             echo '<div id="convertedTable">';
             echo '<table>';
@@ -91,7 +100,7 @@ class NBP_API
                     <th>Waluta docelowa</th>
                     <th>Przeliczona kwota</th>
                   </tr>';
-
+    
             while ($row = $result->fetch_assoc()) {
                 echo '<tr>';
                 echo '<td>' . $row['source_currency'] . '</td>';
@@ -99,7 +108,7 @@ class NBP_API
                 echo '<td>' . $row['converted_amount'] . '</td>';
                 echo '</tr>';
             }
-
+    
             echo '</table>';
             echo '</div>';
         } else {
@@ -167,6 +176,10 @@ class NBP_API
             $amount = $_POST["amount"];
             $sourceCurrency = $_POST["sourceCurrency"];
             $targetCurrency = $_POST["targetCurrency"];
+
+            $last_sourceCurrency = $_POST["sourceCurrency"];
+            $last_targetCurrency = $_POST["targetCurrency"];
+
 
             // clear $_POST array
             // will not show last conversion for every reload page
