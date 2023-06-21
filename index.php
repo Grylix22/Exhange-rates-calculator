@@ -9,8 +9,8 @@ class NBP_API
     private $conn;
 
     // contain last converted currencys names
-    public $last_sourceCurrency;
-    public $last_targetCurrency;
+    private $last_sourceCurrency;
+    private $last_targetCurrency;
 
     public function __construct()
     {
@@ -51,6 +51,33 @@ class NBP_API
 
         if (!$result) {
             throw new Exception("Błąd zapisu danych: " . $this->conn->error);
+        }
+    }
+    
+    // download data from form
+    public function getCurrency()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $amount = $_POST["amount"];
+            $sourceCurrency = $_POST["sourceCurrency"];
+            $targetCurrency = $_POST["targetCurrency"];
+
+            $this->last_sourceCurrency = $_POST["sourceCurrency"];
+            $this->last_targetCurrency = $_POST["targetCurrency"];
+
+
+            // clear $_POST array
+            // will not show last conversion for every reload page
+            $_POST = array();
+
+
+            $convertedAmount = $this->calcCurrency($sourceCurrency, $targetCurrency, $amount);
+
+            // print conversion result on the screen
+            echo "<span>Wynik: " . $convertedAmount . "</span>";
+
+            // save conversion result to database
+            $this->saveCurrencyCalc($sourceCurrency, $targetCurrency, $convertedAmount);
         }
     }
 
@@ -169,32 +196,6 @@ class NBP_API
         }
     }
 
-    // download data from form
-    public function getCurrency()
-    {
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $amount = $_POST["amount"];
-            $sourceCurrency = $_POST["sourceCurrency"];
-            $targetCurrency = $_POST["targetCurrency"];
-
-            $last_sourceCurrency = $_POST["sourceCurrency"];
-            $last_targetCurrency = $_POST["targetCurrency"];
-
-
-            // clear $_POST array
-            // will not show last conversion for every reload page
-            $_POST = array();
-
-
-            $convertedAmount = $this->calcCurrency($sourceCurrency, $targetCurrency, $amount);
-
-            // print conversion result on the screen
-            echo "<span>Wynik: " . $convertedAmount . "</span>";
-
-            // save conversion result to database
-            $this->saveCurrencyCalc($sourceCurrency, $targetCurrency, $convertedAmount);
-        }
-    }
 
     // to print tables on the screen
     public function generateTables() {
