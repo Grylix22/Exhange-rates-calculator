@@ -109,9 +109,10 @@ class NBP_API
 
     public function generateConvertedTable()
     {
-        // Pobranie wartości z metody POST
-            $last_sourceCurrency = $_POST["sourceCurrency"];
-            $last_targetCurrency = $_POST["targetCurrency"];
+        // get data from POST method
+    if (isset($_POST["sourceCurrency"]) && isset($_POST["targetCurrency"])) {
+        $last_sourceCurrency = $_POST["sourceCurrency"];
+        $last_targetCurrency = $_POST["targetCurrency"];
     
         $query = "SELECT source_currency, target_currency, converted_amount
                   FROM conversion_history
@@ -141,6 +142,7 @@ class NBP_API
         } else {
             echo 'Nie znaleziono.';
         }
+    }
     }
 
     public function saveCurrencyCalc($sourceCurrency, $targetCurrency, $convertedAmount)
