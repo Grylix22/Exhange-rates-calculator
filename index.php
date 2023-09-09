@@ -81,7 +81,6 @@ class NBP_API
         }
     }
 
-    // ex 4
     // generating table with every exchange rates
     public function generateFullTable()
     {
@@ -90,15 +89,20 @@ class NBP_API
 
         if ($result->num_rows > 0) {
             echo '<div id="fullTable">';
+            echo '<input type="text" id="searchInput" placeholder="Szukaj waluty lub kraju">';
             echo '<table>';
-            echo '<tr><th>Waluta</th><th>Stawka</th></tr>';
+            echo '<th colspan="2" class="tableTittle" style="font-size: 1.47em;">Aktualne kursy walut:</th>';
+            echo '<tr>
+                    <th>Waluta</th>
+                    <th>Stawka</th>
+                </tr>';
 
-            while ($row = $result->fetch_assoc()) {
-                echo '<tr>';
-                echo '<td>' . $row['currency'] . '</td>';
-                echo '<td>' . $row['rate'] . '</td>';
-                echo '</tr>';
-            }
+                while ($row = $result->fetch_assoc()) {
+                    echo '<tr class="data-row">';
+                    echo '<td>' . $row['currency'] . '</td>';
+                    echo '<td>' . $row['rate'] . '</td>';
+                    echo '</tr>';
+                }
 
             echo '</table>';
             echo '</div>';
@@ -109,45 +113,47 @@ class NBP_API
 
     public function generateConvertedTable()
     {
-        // get data from POST method
-    if (isset($_POST["sourceCurrency"]) && isset($_POST["targetCurrency"])) {
-        $last_sourceCurrency = $_POST["sourceCurrency"];
-        $last_targetCurrency = $_POST["targetCurrency"];
-    
-        $query = "SELECT source_currency, target_currency, converted_amount
-                  FROM conversion_history
-                  WHERE source_currency = '$last_sourceCurrency'
-                  AND target_currency = '$last_targetCurrency'";
-        $result = $this->conn->query($query);
-    
-        if ($result->num_rows > 0) {
-            echo '<div id="convertedTable">';
-            echo '<table>';
-            echo '<tr>
-                    <th>Waluta źródłowa</th>
-                    <th>Waluta docelowa</th>
-                    <th>Przeliczona kwota</th>
-                  </tr>';
-    
-            while ($row = $result->fetch_assoc()) {
-                echo '<tr>';
-                echo '<td>' . $row['source_currency'] . '</td>';
-                echo '<td>' . $row['target_currency'] . '</td>';
-                echo '<td>' . $row['converted_amount'] . '</td>';
-                echo '</tr>';
+        if(isset($_POST['sourceCurrency'])) {
+            // get values from POST
+                $last_sourceCurrency = $_POST["sourceCurrency"];
+                $last_targetCurrency = $_POST["targetCurrency"];
+        
+            $query = "SELECT source_currency, target_currency, converted_amount
+                    FROM conversion_history
+                    WHERE source_currency = '$last_sourceCurrency'
+                    AND target_currency = '$last_targetCurrency'
+                    ORDER BY id DESC
+                    LIMIT 10";
+            $result = $this->conn->query($query);
+        
+            if ($result->num_rows > 0) {
+                echo '<div id="convertedTable">';
+                echo '<table>';
+                echo '<th colspan="3" class="tableTittle" style="font-size: 1.47em;">Podobne kalkulacje:</th>';
+                echo '<tr>
+                        <th>Waluta źródłowa</th>
+                        <th>Waluta docelowa</th>
+                        <th>Przeliczona kwota</th>
+                    </tr>';
+        
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<tr>';
+                        echo '<td>' . $row['source_currency'] . '</td>';
+                        echo '<td>' . $row['target_currency'] . '</td>';
+                        echo '<td>' . $row['converted_amount'] . '</td>';
+                        echo '</tr>';
+                    }
+        
+                echo '</table>';
+                echo '</div>';
             }
-    
-            echo '</table>';
-            echo '</div>';
-        } else {
-            echo 'Nie znaleziono.';
         }
-    }
     }
 
     public function saveCurrencyCalc($sourceCurrency, $targetCurrency, $convertedAmount)
     {
-        if ($convertedAmount !== null) {
+
+        if ($convertedAmount == null || $sourceCurrency == $targetCurrency) {
             exit;
         }
 
@@ -165,7 +171,7 @@ class NBP_API
 
         // when source currency and target currency are the same
         if ($sourceCurrency == $targetCurrency) {
-            echo "Musisz wybrać dwie różne waluty.";
+            echo '<div style="color:#ff0000; font-size: 2em; font-weight: 700;">', 'Musisz wybrać dwie różne waluty.', '</div>';
             exit;
         }
 
@@ -248,6 +254,7 @@ $currencyClass-> generateTables();
                 <option value="dolar amerykański">Dolar amerykański (USD)</option>
                 <option value="euro">Euro (EUR)</option>
                 <option value="bat (Tajlandia)">bat tajlandzki (BAT)</option>
+                <option value="dolar australijski">dolar australijski</option>
             </select>
             <br><br>
 
@@ -259,11 +266,11 @@ $currencyClass-> generateTables();
         <?php
             $currencyClass->getCurrency();
             ?>
-
     </article>
+    <hr/>
 
 
-
+    <script src="scripts.js"></script>
 </body>
 
 </html>
